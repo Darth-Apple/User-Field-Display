@@ -4,6 +4,9 @@ Installation:
    - Upload the contents of the "Upload" folder to your forum root. Activate and install from your ACP. 
    - This plugin creates a new "pfd_page" template in global templates. 
 
+To View: 
+    Go to http://example.com/misc.php?action=field-display
+    
 Configuration: 
    - To get your group ID, go to your ACP and edit a specific usergroup. Look for the "gid=somenumber" parameter in the URL. This is your group ID. 
 
