@@ -16,9 +16,13 @@
     along with PFD.  If not, see <http://www.gnu.org/licenses/>. */
 
 if(!defined("IN_MYBB")) {
-    die("Hacking Attempt.");
+    die("I am groot.");
 }
 
+// This setting determines whether we should display rows for users without data in their specified profile field. 
+// If set to true, this plugin will skip users without data in their profile field. Set as needed.  
+
+$blank_ignore = false; // Default: false
 $plugins->add_hook("misc_start", "pfield_page_controller");
 
 function pfield_info() {
@@ -164,7 +168,7 @@ function pfield_page_controller() {
 }
 
 function pfield_generate_page() { 
-     global $mybb, $templates, $db, $header, $footer, $headerinclude; 
+     global $mybb, $templates, $db, $header, $footer, $headerinclude, $blank_ignore; 
 
     $field_column = "fid" . (int) $mybb->settings['pfd_field'];
     $altbg = "trow1";
@@ -179,21 +183,26 @@ function pfield_generate_page() {
     $or_clause .= "OR u.displaygroup = '".$group."'";
 
     $query = $db->query("SELECT * FROM ".TABLE_PREFIX."users u LEFT JOIN ".TABLE_PREFIX."userfields f ON f.ufid = u.uid WHERE u.usergroup = " . (int) $mybb->settings['pfd_usergroup'] . " OR ".$or_clause.";");
-    while ($data = $db->fetch_array($query)) {
+    
+    while ($data = $db->fetch_array($query)) { 
+
         $username = htmlspecialchars($data['username']);
         $field_value = htmlspecialchars($data[$field_column]);
         $pfd_field_name = htmlspecialchars($mybb->settings['pfd_field_name']);
         
-        $pfd_table .= "<tr>";
-        $pfd_table .= "<td class='$altbg'>$username</td>";
-        $pfd_table .= "<td class='$altbg'>$field_value</td>";
-        $pfd_table .= "</tr>";
+        // Make sure we aren't printing blank rows. 
+        if (($blank_ignore && ($field_value != "" && $field_value != null)) || $blank_ignore == false) {
+            $pfd_table .= "<tr>";
+            $pfd_table .= "<td class='$altbg'>$username</td>";
+            $pfd_table .= "<td class='$altbg'>$field_value</td>";
+            $pfd_table .= "</tr>";
 
-        # MyBB probably has a build in class for this, but this was easy enough. 
-        if ($altbg == "trow1") {
-            $altbg = "trow2";
-        } else {
-            $altbg = "trow1";
+            # MyBB probably has a build in class for this, but this was easy enough. 
+            if ($altbg == "trow1") {
+                $altbg = "trow2";
+            } else {
+                $altbg = "trow1";
+            }
         }
     }
 
