@@ -10,6 +10,8 @@ To View:
 Configuration: 
    - To get your group ID, go to your ACP and edit a specific usergroup. Look for the "gid=somenumber" parameter in the URL. This is your group ID. 
 
+   - This plugin will fetch all users in this group, including the display group and additional groups. 
+
    - To get your field ID, edit a specific profile field in your ACP. Look for "fid=somenumber" in the URL. 
 
    - You can replace "Field Data" with the "Field Name" setting in ACP -> Configuration -> Profile Field Display. 

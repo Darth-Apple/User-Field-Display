@@ -168,8 +168,17 @@ function pfield_generate_page() {
 
     $field_column = "fid" . (int) $mybb->settings['pfd_field'];
     $altbg = "trow1";
+    $group =(int) $mybb->settings['pfd_usergroup'];
 
-    $query = $db->query("SELECT * FROM ".TABLE_PREFIX."users u LEFT JOIN ".TABLE_PREFIX."userfields f ON f.ufid = u.uid WHERE u.usergroup = " . (int) $mybb->settings['pfd_usergroup'] . ";");
+    // We need to take care of additional usergroups. 
+    // This plugin was designed for smaller forums (<10,000 users). This may be slower on big boards. 
+
+    $or_clause = "u.additionalgroups LIKE '%" . $group . ",%' ";
+    $or_clause .= "OR u.additionalgroups LIKE '%," . $group . "' ";
+    $or_clause .= "OR u.additionalgroups = '".$group."'";
+    $or_clause .= "OR u.displaygroup = '".$group."'";
+
+    $query = $db->query("SELECT * FROM ".TABLE_PREFIX."users u LEFT JOIN ".TABLE_PREFIX."userfields f ON f.ufid = u.uid WHERE u.usergroup = " . (int) $mybb->settings['pfd_usergroup'] . " OR ".$or_clause.";");
     while ($data = $db->fetch_array($query)) {
         $username = htmlspecialchars($data['username']);
         $field_value = htmlspecialchars($data[$field_column]);
